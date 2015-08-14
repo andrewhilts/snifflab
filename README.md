@@ -74,7 +74,7 @@ Make sure the network interface (vlan1 here) is correct.
 	stop on runlevel [016]
 
 	script
-		cd /home/pi/mitm
+		cd /home/pi/snifflab
 		exec python sniffer.py -i bond0 -s 100 -t 1200
 	end script
 
