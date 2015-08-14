@@ -75,7 +75,7 @@ Make sure the network interface (vlan1 here) is correct.
 
 	script
 		cd /home/pi/mitm
-	exec python sniffer.py -i bond0 -s 100 -t 1200
+		exec python sniffer.py -i bond0 -s 100 -t 1200
 	end script
 
 ## MITM proxy service
