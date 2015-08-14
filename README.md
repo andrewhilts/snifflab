@@ -90,3 +90,14 @@ mitm.conf
 		echo "MITM Keys being logged here: $SSLKEYLOGFILE"
 		exec mitmdump -T --host --conf=/etc/mitmproxy/common.conf
 	end script
+
+## Script to backup pcaps to local machine
+
+	#!/bin/bash
+	remote_server=cyberchilts
+	pcap_dir=/pcaps
+	keylogfile=/var/log/mitmkeys.log
+	local_dir=~/Documents/snifflab
+
+	rsync -a "$remote_server":$pcap_dir $local_dir
+	scp "$remote_server":$keylogfile $local_dir
