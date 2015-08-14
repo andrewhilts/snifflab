@@ -1,6 +1,6 @@
-#Setting up a SNIFFLAB
+# Setting up a SNIFFLAB
 
-##Firewall rules on DD-WRT router to send traffic to MITM proxy box
+## Firewall rules on DD-WRT router to send traffic to MITM proxy box
 Make sure the network interface (vlan1 here) is correct.
 
 	PROXYIP=your.proxy.ip
@@ -9,7 +9,7 @@ Make sure the network interface (vlan1 here) is correct.
 	ip rule add fwmark 3 table 2
 	ip route add default via $PROXYIP dev vlan1 table 2
 
-##PCAP machine scripts
+## PCAP machine scripts
 /etc/network/interfaces
 
 	auto lo
@@ -45,7 +45,7 @@ Make sure the network interface (vlan1 here) is correct.
 	        auth_alg=OPEN
 	}
 
-###Getting the network running correctly on boot
+### Getting the network running correctly on boot
 /etc/init.d/network.sh
 
 	#!/bin/sh
@@ -66,7 +66,7 @@ Make sure the network interface (vlan1 here) is correct.
 	sudo ifconfig eth0 promisc
 	exit 0
 
-###Start capturing packets on startup -- create a sniffer service
+### Start capturing packets on startup -- create a sniffer service
 /etc/init/sniffer.conf
 
 	#sniffer.conf
