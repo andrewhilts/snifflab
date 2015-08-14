@@ -94,7 +94,7 @@ mitm.conf
 ## Script to backup pcaps to local machine
 
 	#!/bin/bash
-	remote_server=cyberchilts
+	remote_server=yourservername
 	pcap_dir=/pcaps
 	keylogfile=/var/log/mitmkeys.log
 	local_dir=~/Documents/snifflab
