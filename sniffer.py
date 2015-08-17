@@ -10,12 +10,13 @@ import signal
 import sys
 
 class PcapFileWriter:
-	def __init__(self, pc, maxSecondsInterval, fileSizeLimitMB):
+	def __init__(self, pc, maxSecondsInterval, fileSizeLimitMB, filenamesuffix):
 		self.currentFile = None
 		self.pc = pc
 		self.maxSecondsInterval = int(maxSecondsInterval)
 		self.filesize_check_time = 0
 		self.fileSizeLimit = int(fileSizeLimitMB) * 1000000;
+		self.filenamesuffix = filenamesuffix
 		self.projectPath = os.path.dirname(os.path.abspath(__file__))
 
 	def get_current_file(self):
@@ -31,7 +32,10 @@ class PcapFileWriter:
 		return self.currentFile
 
 	def create_pcap_filename(self):
-		self.currentFileName = str(self.current_file_timestamp) + ".pcap"
+		if self.filenamesuffix:
+			self.currentFileName = str(self.current_file_timestamp) + "_" + self.filenamesuffix.replace(" ", "-") + ".pcap"
+		else:
+			self.currentFileName = str(self.current_file_timestamp) + ".pcap"
 		return self.currentFileName
 
 	def create_pcap_filepath(self):
@@ -119,6 +123,7 @@ def main():
 	parser.add_option("-i", "--interface", dest="interface", help="network interface to listen on")
 	parser.add_option("-s", "--filesizelimit", dest="filesizelimit", help="Maximum pcap filesize, in MB")
 	parser.add_option("-t", "--maxseconds", dest="maxsecondsinterval", help="Maximum duration for a pcap file to cover, in seconds.")
+	parser.add_option("-f", "--filenamesuffix", dest="filenamesuffix", help="Suffix to add after timestamp in filename.")
 	(options, args) = parser.parse_args()
 	
 	# list all the network devices
@@ -129,7 +134,7 @@ def main():
 	read_timeout = 100
 
 	pc = pcapy.open_live(options.interface, max_bytes, promiscuous, read_timeout)
-	pcapWriter = PcapFileWriter(pc, options.maxsecondsinterval, options.filesizelimit)
+	pcapWriter = PcapFileWriter(pc, options.maxsecondsinterval, options.filesizelimit, options.filenamesuffix)
 
 	packet_limit = -1
 	pc.loop(packet_limit, process_packets)
