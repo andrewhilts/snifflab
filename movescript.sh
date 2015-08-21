@@ -1,6 +1,6 @@
 #!/bin/bash
-ssh andrew@cyberchilts "cd /pcaps; mkdir $1"
-scp $2 andrew@cyberchilts:/pcaps/$1/
+ssh user@hostname "cd /pcaps; mkdir $1"
+scp $2 user@hostname:/pcaps/$1/
 if [ "$?" = "0" ]; then
 	echo "Backed up file $2 to cyberchilts:/pcaps/"$1"/"
 	rm  $2

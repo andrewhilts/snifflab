@@ -1,5 +1,8 @@
 # Setting up a SNIFFLAB
 
+## Detailed Guide
+Please consult the detailed guide on setting up your own Snifflab network here: https://openeffect.ca/snifflab-an-environment-for-testing-mobile-devices/
+
 ## Firewall rules on DD-WRT router to send traffic to MITM proxy box
 Make sure the network interface (vlan1 here) is correct.
 
