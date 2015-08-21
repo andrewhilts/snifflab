@@ -10,7 +10,7 @@ import signal
 import sys
 
 class PcapFileWriter:
-	def __init__(self, pc, maxSecondsInterval, fileSizeLimitMB, filenamesuffix):
+	def __init__(self, pc, maxSecondsInterval, fileSizeLimitMB, filenamesuffix, remotehost, remotepath):
 		self.currentFile = None
 		self.pc = pc
 		self.maxSecondsInterval = int(maxSecondsInterval)
@@ -18,6 +18,8 @@ class PcapFileWriter:
 		self.fileSizeLimit = int(fileSizeLimitMB) * 1000000;
 		self.filenamesuffix = filenamesuffix
 		self.projectPath = os.path.dirname(os.path.abspath(__file__))
+		self.remotehost = remotehost
+		self.remotepath = remotepath
 
 	def get_current_file(self):
 		if self.currentFile is None:
@@ -81,13 +83,12 @@ class PcapFileWriter:
 		self.currentFile.writepkt(data, ts)
 		return self.getPcapFilePathAndName()
 
-	def backupPcapFile(self, timestamp, path):
+	def backupPcapFile(self, timestamp, filepath):
 		dateStr = datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d')
 		movescriptPath = self.projectPath + '/movescript.sh'
-		p = Popen(['bash', movescriptPath, dateStr, path])
+		p = Popen(['bash', movescriptPath, dateStr, filepath, self.remotehost, self.remotepath])
 
 def get_packet_metadata(pkt, ts):
-    print "got packet"
     eth = dpkt.ethernet.Ethernet(pkt)
     metadata = {}
     metadata['timestamp'] = ts
@@ -124,6 +125,8 @@ def main():
 	parser.add_option("-s", "--filesizelimit", dest="filesizelimit", help="Maximum pcap filesize, in MB")
 	parser.add_option("-t", "--maxseconds", dest="maxsecondsinterval", help="Maximum duration for a pcap file to cover, in seconds.")
 	parser.add_option("-f", "--filenamesuffix", dest="filenamesuffix", help="Suffix to add after timestamp in filename.")
+	parser.add_option("-r", "--remotehost", dest="remotehost", help="Remote host to backup pcaps")
+	parser.add_option("-p", "--remotepath", dest="remotepath", help="Path on remote host to backup to")
 	(options, args) = parser.parse_args()
 	
 	# list all the network devices
@@ -134,7 +137,7 @@ def main():
 	read_timeout = 100
 
 	pc = pcapy.open_live(options.interface, max_bytes, promiscuous, read_timeout)
-	pcapWriter = PcapFileWriter(pc, options.maxsecondsinterval, options.filesizelimit, options.filenamesuffix)
+	pcapWriter = PcapFileWriter(pc, options.maxsecondsinterval, options.filesizelimit, options.filenamesuffix, options.remotehost, options.remotepath)
 
 	packet_limit = -1
 	pc.loop(packet_limit, process_packets)
@@ -144,7 +147,7 @@ def process_packets(header, data):
 	ts = Decimal('{0}.{1}'.format(*header.getts()))
 	metadata = get_packet_metadata(data, ts)
 	filepath = pcapWriter.writeToFile(ts, data)
-	print "%d: %s ==> %s." % (metadata['timestamp'], metadata['src'], metadata['dst'])
+	#print "%d: %s ==> %s." % (metadata['timestamp'], metadata['src'], metadata['dst'])
 
 def mac_addr(mac_string):
     return ':'.join('%02x' % ord(b) for b in mac_string)
