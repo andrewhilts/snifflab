@@ -1,14 +1,17 @@
 #!/bin/bash
 
 # Set these vars to the SSH details of your pcap collecting machine
-SSHUSERNAME=user
-SSHHOSTNAME=hostname
+DATE=$1
+PCAPFILE=$2
+SSHUSERNAME=$3
+SSHHOSTNAME=$4
+SSHPATH=$5
 
-ssh $SSHUSERNAME@$SSHHOSTNAME "cd /pcaps; mkdir $1"
-scp $2 $SSHUSERNAME@$SSHHOSTNAME:/pcaps/$1/
+ssh $SSHUSERNAME@$SSHHOSTNAME "cd $SSHPATH; mkdir $DATE"
+scp $2 $SSHUSERNAME@$SSHHOSTNAME:$SSHPATH/$DATE/
 if [ "$?" = "0" ]; then
-	echo "Backed up file $2 to $SSHHOSTNAME:/pcaps/"$1"/"
-	rm  $2
+	echo "Backed up file $PCAPFILE to $SSHHOSTNAME:$SSHPATH/"$DATE"/"
+	rm  $PCAPFILE
 	exit 0
 else
 	echo "Cannot backup pcap file. SSH error"

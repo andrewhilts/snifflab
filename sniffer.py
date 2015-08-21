@@ -10,7 +10,7 @@ import signal
 import sys
 
 class PcapFileWriter:
-	def __init__(self, pc, maxSecondsInterval, fileSizeLimitMB, filenamesuffix, remotehost, remotepath):
+	def __init__(self, pc, maxSecondsInterval, fileSizeLimitMB, filenamesuffix, remotehost, remotepath, remoteuser):
 		self.currentFile = None
 		self.pc = pc
 		self.maxSecondsInterval = int(maxSecondsInterval)
@@ -19,6 +19,7 @@ class PcapFileWriter:
 		self.filenamesuffix = filenamesuffix
 		self.projectPath = os.path.dirname(os.path.abspath(__file__))
 		self.remotehost = remotehost
+		self.remoteuser = remoteuser
 		self.remotepath = remotepath
 
 	def get_current_file(self):
@@ -86,7 +87,7 @@ class PcapFileWriter:
 	def backupPcapFile(self, timestamp, filepath):
 		dateStr = datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d')
 		movescriptPath = self.projectPath + '/movescript.sh'
-		p = Popen(['bash', movescriptPath, dateStr, filepath, self.remotehost, self.remotepath])
+		p = Popen(['bash', movescriptPath, dateStr, filepath, self.remoteuser, self.remotehost, self.remotepath])
 
 def get_packet_metadata(pkt, ts):
     eth = dpkt.ethernet.Ethernet(pkt)
@@ -126,6 +127,7 @@ def main():
 	parser.add_option("-t", "--maxseconds", dest="maxsecondsinterval", help="Maximum duration for a pcap file to cover, in seconds.")
 	parser.add_option("-f", "--filenamesuffix", dest="filenamesuffix", help="Suffix to add after timestamp in filename.")
 	parser.add_option("-r", "--remotehost", dest="remotehost", help="Remote host to backup pcaps")
+	parser.add_option("-u", "--remoteuser", dest="remoteuser", help="Remote username to backup pcaps")
 	parser.add_option("-p", "--remotepath", dest="remotepath", help="Path on remote host to backup to")
 	(options, args) = parser.parse_args()
 	
@@ -137,7 +139,7 @@ def main():
 	read_timeout = 100
 
 	pc = pcapy.open_live(options.interface, max_bytes, promiscuous, read_timeout)
-	pcapWriter = PcapFileWriter(pc, options.maxsecondsinterval, options.filesizelimit, options.filenamesuffix, options.remotehost, options.remotepath)
+	pcapWriter = PcapFileWriter(pc, options.maxsecondsinterval, options.filesizelimit, options.filenamesuffix, options.remotehost, options.remotepath, options.remoteuser)
 
 	packet_limit = -1
 	pc.loop(packet_limit, process_packets)
