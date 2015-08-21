@@ -3,6 +3,15 @@
 ## Detailed Guide
 Please consult the detailed guide on setting up your own Snifflab network here: https://openeffect.ca/snifflab-an-environment-for-testing-mobile-devices/
 
+## sniffer.py command line arguments
+	-i (specify the network interface)
+	-s (specify the file size limit)
+	-t (specify the time interval, in seconds, between new PCAP files)
+	-f (specify a filename suffix to append to each PCAP.
+	-u (specify a ssh username for a remote backup)
+	-h (specify a ssh host for remote backup)
+	-p (specify the path on the remote host for backup)
+
 ## Firewall rules on DD-WRT router to send traffic to MITM proxy box
 Make sure the network interface (vlan1 here) is correct.
 
